@@ -1,1 +1,91 @@
+<section class="todo-shell">
+  <header class="todo-header">
+    <p class="eyebrow">Tasks</p>
+    <h1>Todo list</h1>
+    <p class="lede">Create, read, update, and delete tasks to stay on track.</p>
+  </header>
 
+  <form class="todo-form" (ngSubmit)="addTodo()">
+    <label class="visually-hidden" for="new-todo">New todo</label>
+    <input
+      id="new-todo"
+      type="text"
+      placeholder="Add a new todo"
+      autocomplete="off"
+      [formControl]="todoTitle"
+      data-testid="new-todo-input"
+    />
+    <button
+      type="submit"
+      [disabled]="todoTitle.invalid || !todoTitle.value.trim()"
+      data-testid="add-todo"
+    >
+      Add
+    </button>
+  </form>
+
+  <section class="todo-list" aria-live="polite">
+    <p *ngIf="todos().length === 0" class="empty" data-testid="empty-state">
+      No todos yet. Add your first one to get started.
+    </p>
+
+    <ul>
+      <li
+        *ngFor="let todo of todos(); trackBy: trackById"
+        [attr.data-testid]="'todo-item-' + todo.id"
+      >
+        <div class="todo-row">
+          <label class="todo-left">
+            <input
+              type="checkbox"
+              [checked]="todo.completed"
+              (change)="toggleComplete(todo.id)"
+              [attr.data-testid]="'toggle-' + todo.id"
+              aria-label="Toggle completion for {{ todo.title }}"
+            />
+            <span class="todo-title" [class.completed]="todo.completed">{{ todo.title }}</span>
+          </label>
+
+          <div class="todo-actions">
+            <ng-container *ngIf="editingId() === todo.id; else viewMode">
+              <label class="visually-hidden" [attr.for]="'edit-todo-' + todo.id">
+                Edit todo {{ todo.title }}
+              </label>
+              <input
+                [id]="'edit-todo-' + todo.id"
+                type="text"
+                [formControl]="editTitle"
+                data-testid="edit-input"
+              />
+              <button
+                type="button"
+                (click)="saveEdit(todo.id)"
+                [disabled]="editTitle.invalid || !editTitle.value.trim()"
+                data-testid="save-edit"
+              >
+                Save
+              </button>
+              <button type="button" class="ghost" (click)="cancelEdit()" data-testid="cancel-edit">
+                Cancel
+              </button>
+            </ng-container>
+
+            <ng-template #viewMode>
+              <button type="button" class="ghost" (click)="startEdit(todo)" [attr.data-testid]="'edit-' + todo.id">
+                Edit
+              </button>
+              <button
+                type="button"
+                class="ghost danger"
+                (click)="deleteTodo(todo.id)"
+                [attr.data-testid]="'delete-' + todo.id"
+              >
+                Delete
+              </button>
+            </ng-template>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>
