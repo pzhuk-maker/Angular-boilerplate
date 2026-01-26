@@ -52,7 +52,7 @@ export class App {
 
   protected startEdit(todo: Todo): void {
     this.editingId.set(todo.id);
-    this.editTitle.set(todo.title);
+    this.editTitle.setValue(todo.title);
   }
 
   protected saveEdit(todoId: number): void {
